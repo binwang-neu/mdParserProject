@@ -137,9 +137,7 @@ func main() {
 					md.CodeBlock.Num += 1
 					md.CodeBlock.Item[strconv.Itoa(i)+":"+strconv.Itoa(j)] = string(codeBlockNode.Leaf.Literal)
 				case *ast.List:
-					listNode := paragraphNode.Children[j].(*ast.List)
-					//fmt.Println("paragraph list length:", len(listNode.Children))
-					md.List.Num = int64(len(listNode.Children))
+					// list node wont be contained in the paragraph node
 				case *ast.Math:
 					mathNode := paragraphNode.Children[j].(*ast.Math)
 					//fmt.Println("paragraph math:", string(mathNode.Literal))
