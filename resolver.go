@@ -59,7 +59,7 @@ func main() {
 	md.MathBlock.Item = make(map[string]string)
 	md.Math.Item = make(map[string]string)
 
-	input := "test/test.md"
+	input := "test/data.md"
 	source, err := ioutil.ReadFile(input)
 	if err != nil {
 		panic(err)
@@ -186,7 +186,54 @@ func main() {
 		case *ast.List:
 			listNode := nodeList[i].(*ast.List)
 			//fmt.Println("list length:", len(listNode.Children))
-			md.List.Num = int64(len(listNode.Children))
+			md.List.Num += 1
+			for j:=0; j< len(listNode.Children); j++ {
+				listItem := listNode.Children[j].(*ast.ListItem)
+				paragraphNode := listItem.Container.Children[0]
+				for k := 0; k < len(paragraphNode.AsContainer().Children); k++ {
+					switch paragraphNode.AsContainer().Children[k].(type) {
+						case *ast.Text:
+							textNode := paragraphNode.AsContainer().Children[k].(*ast.Text)
+							//md.Text.Num += 1
+							md.List.Item[strconv.Itoa(i)+":"+strconv.Itoa(j)+":"+strconv.Itoa(k)] = string(textNode.Literal)
+						case *ast.Link:
+							linkNode := paragraphNode.AsContainer().Children[k].(*ast.Link)
+							//fmt.Println("paragraph link:", string(linkNode.Destination))
+							//md.Link.Num += 1
+							md.List.Item[strconv.Itoa(i)+":"+strconv.Itoa(j)+":"+strconv.Itoa(k)] = string(linkNode.Destination)
+						case *ast.Image:
+							imageNode := paragraphNode.AsContainer().Children[k].(*ast.Image)
+							//fmt.Println("paragraph image:", string(imageNode.Destination))
+							//md.Image.Num += 1
+							md.List.Item[strconv.Itoa(i)+":"+strconv.Itoa(j)+":"+strconv.Itoa(k)] = string(imageNode.Destination)
+						case *ast.Code:
+							codeNode := paragraphNode.AsContainer().Children[k].(*ast.Code)
+							//fmt.Println("paragraph code:", string(codeNode.Leaf.Literal))
+							//md.Code.Num += 1
+							md.List.Item[strconv.Itoa(i)+":"+strconv.Itoa(j)+":"+strconv.Itoa(k)] = string(codeNode.Leaf.Literal)
+						case *ast.CodeBlock:
+							codeBlockNode := paragraphNode.AsContainer().Children[k].(*ast.CodeBlock)
+							//fmt.Println("paragraph code block:", string(codeBlockNode.Leaf.Literal))
+							//md.CodeBlock.Num += 1
+							md.List.Item[strconv.Itoa(i)+":"+strconv.Itoa(j)+":"+strconv.Itoa(k)] = string(codeBlockNode.Leaf.Literal)
+						case *ast.Math:
+							mathNode := paragraphNode.AsContainer().Children[k].(*ast.Math)
+							//fmt.Println("paragraph math:", string(mathNode.Literal))
+							//md.Math.Num += 1
+							md.List.Item[strconv.Itoa(i)+":"+strconv.Itoa(j)+":"+strconv.Itoa(k)] = string(mathNode.Literal)
+						case *ast.MathBlock:
+							mathBlockNode := paragraphNode.AsContainer().Children[k].(*ast.MathBlock)
+							//fmt.Println("paragraph math block:", string(mathBlockNode.Literal))
+							//md.MathBlock.Num += 1
+							md.List.Item[strconv.Itoa(i)+":"+strconv.Itoa(j)+":"+strconv.Itoa(k)] = string(mathBlockNode.Literal)
+						case *ast.Citation:
+							citationNode := paragraphNode.AsContainer().Children[k].(*ast.Citation)
+							//fmt.Println("paragraph math block:", string(citationNode.Literal))
+							//md.Citation.Num += 1
+							md.List.Item[strconv.Itoa(i)+":"+strconv.Itoa(j)+":"+strconv.Itoa(k)] = string(citationNode.Literal)
+					}
+				}
+			}
 		case *ast.Math:
 			mathNode := nodeList[i].(*ast.Math)
 			//fmt.Println("paragraph math:", string(mathNode.Literal))
